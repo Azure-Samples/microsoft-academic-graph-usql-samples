@@ -1,0 +1,35 @@
+//TODO: Declare the graph and output path.
+//START CODE HERE
+DECLARE @Param_GraphDir  string = "";
+DECLARE @Param_OutputDir string = "";
+//END CODE HERE
+
+DECLARE @In_Affiliation string = @Param_GraphDir + "Affiliations.txt";
+
+DECLARE @Out_Affiliation string = @Param_OutputDir + "Affiliation.tsv";
+
+//Extract Affiliation table.
+@affiliations =
+    EXTRACT AffiliationId long,
+            Rank uint,
+            NormalizedName string,
+            DisplayName string,
+            GridId string,
+            OfficialPage string,
+            WikiPage string,
+            PaperCount long?,
+            CitationCount long?,
+            CreatedDate DateTime
+    FROM @In_Affiliation
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Get Microsoft's affiliation Id and name.
+@microsoft = 
+    SELECT (long?)AffiliationId AS AffiliationId, //Cast long to long? for later join purpose.
+           DisplayName AS AffiliationName
+    FROM @affiliations
+    WHERE NormalizedName == "microsoft";
+
+OUTPUT @microsoft
+TO @Out_Affiliation
+USING Outputters.Tsv(outputHeader: true);
