@@ -1,0 +1,64 @@
+//TODO: Use database.
+//START CODE HERE
+USE DATABASE _____________;
+//END CODE HERE
+
+DROP FUNCTION IF EXISTS FieldsOfStudy;
+
+//TODO: Create FieldsOfStudy function with a parameter @BaseDir.
+//START CODE HERE
+_______________ FieldsOfStudy(@BaseDir string = "")
+//END CODE HERE
+RETURNS @_FieldsOfStudy TABLE
+(
+    FieldOfStudyId long,
+    Rank uint,
+    NormalizedName string,
+    DisplayName string,
+    MainType string,
+    Level int,
+    PaperCount long?,
+    CitationCount long?,
+    CreatedDate DateTime
+)
+AS 
+BEGIN
+    DECLARE @_Path string = @BaseDir + "FieldsOfStudy.txt";
+    @_FieldsOfStudy =
+        EXTRACT FieldOfStudyId long,
+                Rank uint,
+                NormalizedName string,
+                DisplayName string,
+                MainType string,
+                Level int,
+                PaperCount long?,
+                CitationCount long?,
+                CreatedDate DateTime
+        FROM @_Path
+        USING Extractors.Tsv(silent: true, quoting: false);
+    RETURN;
+END;
+
+DROP FUNCTION IF EXISTS PaperFieldsOfStudy;
+
+//TODO: Create PaperFieldsOfStudy function with a parameter @BaseDir.
+//START CODE HERE
+_______________ PaperFieldsOfStudy(@BaseDir string = "")
+//END CODE HERE
+RETURNS @_PaperFieldsOfStudy TABLE
+(
+    PaperId long,
+    FieldOfStudyId long,
+    Similarity float
+)
+AS
+BEGIN
+    DECLARE @_Path string = @BaseDir + "PaperFieldsOfStudy.txt";
+    @_PaperFieldsOfStudy =
+        EXTRACT PaperId long,
+                FieldOfStudyId long,
+                Similarity float
+        FROM @_Path
+        USING Extractors.Tsv(silent: true, quoting: false);
+    RETURN;
+END;
