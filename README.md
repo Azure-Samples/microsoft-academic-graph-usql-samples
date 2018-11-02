@@ -15,8 +15,7 @@ U-SQL samples for analyzing data in Microsoft Academic Graph
 1. Download or clone the repository.
 2. Run the scripts on Azure portal.
 
-
 ## Resources
 
-[Microsoft Academic Graph documentation](https://docs.microsoft.com/en-us/academic-services/graph/)
-[Microsoft Academic Graph PySpark Samples](https://github.com/Azure-Samples/microsoft-academic-graph-pyspark-samples)
+1. [Microsoft Academic Graph documentation](https://docs.microsoft.com/en-us/academic-services/graph/)
+2. [Microsoft Academic Graph PySpark Samples](https://github.com/Azure-Samples/microsoft-academic-graph-pyspark-samples)
