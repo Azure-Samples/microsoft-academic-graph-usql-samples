@@ -1,0 +1,61 @@
+//TODO: Declare the output path and use database.
+//START CODE HERE
+DECLARE @Param_OutputDir string = "";
+
+USE DATABASE _____________;
+//END CODE HERE
+
+DECLARE @In_Paper string = @Param_OutputDir + "Paper.tsv";
+
+DECLARE @Out_PaperFieldOfStudy string = @Param_OutputDir + "PaperFieldOfStudyRelationship.tsv";
+DECLARE @Out_FieldOfStudy      string = @Param_OutputDir + "FieldOfStudy.tsv";
+
+//Get all paper details for the input organization.
+@orgPapers = 
+    EXTRACT PaperId long,
+            Title string,
+            CitationCount int?,
+            Date DateTime?,
+            PublicationType string,
+            LogProb double,
+            Url string,
+            VId long?,
+            Year int
+    FROM @In_Paper
+    USING Extractors.Tsv(skipFirstNRows: 1);
+
+//Get all Paper-Field-of-Study relationships for the input organization.
+@orgPaperFieldOfStudy =
+    SELECT @orgPapers.PaperId,
+           PaperFieldOfStudy.FieldOfStudyId
+    //TODO: Join PaperFieldOfStudy table with paper Ids above.
+    //START CODE HERE
+    FROM _________________
+    __________ @orgPapers
+    //END CODE HERE
+    ON PaperFieldOfStudy.PaperId == @orgPapers.PaperId;
+
+OUTPUT @orgPaperFieldOfStudy
+TO @Out_PaperFieldOfStudy
+USING Outputters.Tsv(outputHeader: true);
+
+//Get all field-of-study Ids for the input organization.
+@orgFieldOfStudyIds =
+    SELECT DISTINCT FieldOfStudyId
+    FROM @orgPaperFieldOfStudy;
+
+//Get all field-of-study details for the input organization.
+@fieldOfStudy =
+    SELECT @orgFieldOfStudyIds.FieldOfStudyId,
+           FieldOfStudy.Level AS FieldLevel,
+           FieldOfStudy.DisplayName AS FieldName
+    //TODO: Join FieldOfStudy table with paper Ids above.
+    //START CODE HERE
+    FROM ____________
+    __________ @orgFieldOfStudyIds
+    //END CODE HERE
+    ON FieldOfStudy.FieldOfStudyId == @orgFieldOfStudyIds.FieldOfStudyId;
+
+OUTPUT @fieldOfStudy
+TO @Out_FieldOfStudy
+USING Outputters.Tsv(outputHeader: true);
