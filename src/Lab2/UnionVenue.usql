@@ -1,0 +1,56 @@
+//TODO: Declare the graph and output path.
+//START CODE HERE
+DECLARE @Param_GraphDir  string = "";
+DECLARE @Param_OutputDir string = "";
+//END CODE HERE
+
+DECLARE @In_Conference string = @Param_GraphDir + "ConferenceSeries.txt";
+DECLARE @In_Journal    string = @Param_GraphDir + "Journals.txt";
+
+DECLARE @Out_Venue string = @Param_OutputDir + "Venue.tsv";
+
+//Extract Conference table.
+@conferenceSeries =
+    EXTRACT ConferenceSeriesId long,
+            Rank uint,
+            NormalizedName string,
+            DisplayName string,
+            PaperCount long?,
+            CitationCount long?,
+            CreatedDate DateTime
+    FROM @In_Conference
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Extract Journal table.
+@journals =
+    EXTRACT JournalId long,
+            Rank uint,
+            NormalizedName string,
+            DisplayName string,
+            Issn string,
+            Publisher string,
+            Webpage string,
+            PaperCount long?,
+            CitationCount long?,
+            CreatedDate DateTime
+    FROM @In_Journal
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Union conference and journal tables using the same schema.
+@venue =
+    SELECT ConferenceSeriesId AS VId,
+           DisplayName AS VenueName,
+           NormalizedName AS VenueShortName
+    FROM @conferenceSeries
+    //TODO: Union conferences and journals.
+    //START CODE HERE
+    _____
+    //END CODE HERE
+    SELECT JournalId AS VId,
+           DisplayName AS VenueName,
+           NormalizedName AS VenueShortName
+    FROM @journals;
+
+OUTPUT @venue
+TO @Out_Venue
+USING Outputters.Tsv(outputHeader: true);

@@ -1,0 +1,43 @@
+//TODO: Declare the graph and output path.
+//START CODE HERE
+DECLARE @Param_GraphDir  string = "";
+DECLARE @Param_OutputDir string = "";
+//END CODE HERE
+
+DECLARE @In_PaperAuthorAffiliation string = @Param_GraphDir + "PaperAuthorAffiliations.txt";
+DECLARE @In_Affiliation            string = @Param_OutputDir + "Affiliation.tsv";
+
+DECLARE @Out_PaperAuthorAffiliation string = @Param_OutputDir + "PaperAuthorAffiliationRelationship.tsv";
+
+//Get all Paper-Author-Affiliation relationships
+@paperAuthorAffiliation =
+    EXTRACT PaperId long,
+            AuthorId long,
+            AffiliationId long?,
+            AuthorSequenceNumber uint
+    FROM @In_PaperAuthorAffiliation
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Get the affiliation Id of the input organization.
+@affiliation = 
+    EXTRACT AffiliationId long?,
+            AffiliationName string
+    FROM @In_Affiliation
+    USING Extractors.Tsv(skipFirstNRows: 1);
+
+//Get Paper-Author-Affiliation relationships for the input organization.
+@orgPaperAuthorAffiliation =
+    SELECT @paperAuthorAffiliation.PaperId,
+           @paperAuthorAffiliation.AuthorId,
+           @affiliation.AffiliationId,
+           @paperAuthorAffiliation.AuthorSequenceNumber
+    FROM @paperAuthorAffiliation
+    //TODO: Join all Paper-Author-Affiliation relationships with the affiliation Id of the input organization
+    //START CODE HERE
+    __________ @affiliation
+    //END CODE HERE
+    ON @paperAuthorAffiliation.AffiliationId == @affiliation.AffiliationId;
+
+OUTPUT @orgPaperAuthorAffiliation
+TO @Out_PaperAuthorAffiliation
+USING Outputters.Tsv(outputHeader: true);

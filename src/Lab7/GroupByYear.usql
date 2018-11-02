@@ -1,0 +1,37 @@
+//TODO: Declare the output path.
+//START CODE HERE
+DECLARE @Param_OutputDir string = "";
+//END CODE HERE
+
+DECLARE @In_OrgPaper string = @Param_OutputDir + "Paper.tsv";
+
+DECLARE @Out_OrgPaperGroupByYear string = @Param_OutputDir + "OrgPaperGroupByYear.tsv";
+
+//Get all paper details for the input organization.
+@orgPapers = 
+    EXTRACT PaperId long,
+            Title string,
+            CitationCount int?,
+            Date DateTime?,
+            PublicationType string,
+            LogProb double,
+            Url string,
+            VId long?,
+            Year int
+    FROM @In_OrgPaper
+    USING Extractors.Tsv(skipFirstNRows: 1);
+
+//Get paper count and citation sum for each year.
+@orgPaperGroupByYear = 
+    SELECT Year,
+           COUNT(PaperId) AS PaperCount,
+           SUM(CitationCount) AS CitationSum
+    FROM @orgPapers
+    //Group by Year to aggregate paper Ids and citation count for each year.
+    //START CODE HERE
+    ________ Year;
+    //END CODE HERE
+
+OUTPUT @orgPaperGroupByYear
+TO @Out_OrgPaperGroupByYear
+USING Outputters.Tsv(outputHeader: true);

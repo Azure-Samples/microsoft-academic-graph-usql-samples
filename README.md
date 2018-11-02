@@ -1,57 +1,21 @@
-# Project Name
+# Microsoft Academic Graph U-SQL Samples
 
-(short, 1-3 sentenced, description of the project)
-
-## Features
-
-This project framework provides the following features:
-
-* Feature 1
-* Feature 2
-* ...
+U-SQL samples for analyzing data in Microsoft Academic Graph
 
 ## Getting Started
 
 ### Prerequisites
 
-(ideally very short, if any)
-
-- OS
-- Library version
-- ...
-
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
+1. [Get started with Microsoft Academic Graph on Azure storage](https://docs.microsoft.com/en-us/academic-services/graph/get-started-setup-provisioning)
+2. [Get started using Microsoft Academic Graph on Azure Data Lake Analytics](https://docs.microsoft.com/en-us/academic-services/graph/get-started-setup-azure-data-lake-analytics)
+3. [Get started with PowerBI](https://powerbi.microsoft.com/en-us/)
 
 ### Quickstart
-(Add steps to get up and running quickly)
 
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
+1. Download or clone the repository.
+2. Run the scripts on Azure portal.
 
-
-## Demo
-
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
 
 ## Resources
 
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
+[Microsoft Academic Graph PySpark Samples](https://github.com/Azure-Samples/microsoft-academic-graph-pyspark-samples)

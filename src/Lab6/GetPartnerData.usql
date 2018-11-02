@@ -1,0 +1,138 @@
+//TODO: Declare the graph and output path.
+//START CODE HERE
+DECLARE @Param_GraphDir  string = "";
+DECLARE @Param_OutputDir string = "";
+//END CODE HERE
+
+DECLARE @In_PaperAuthorAffiliation    string = @Param_GraphDir + "PaperAuthorAffiliations.txt";
+DECLARE @In_Affiliation               string = @Param_GraphDir + "Affiliations.txt";
+DECLARE @In_Author                    string = @Param_GraphDir + "Authors.txt";
+DECLARE @In_OrgPaper                  string = @Param_OutputDir + "Paper.tsv";
+DECLARE @In_OrgPaperAuthorAffiliation string = @Param_OutputDir + "PaperAuthorAffiliationRelationship.tsv";
+
+DECLARE @Out_PartnerPaperAuthorAffiliation string = @Param_OutputDir + "Partner_PaperAuthorAffiliationRelationship.tsv";
+DECLARE @Out_PartnerAffiliation            string = @Param_OutputDir + "Partner_Affiliation.tsv";
+DECLARE @Out_PartnerAuthor                 string = @Param_OutputDir + "Partner_Author.tsv";
+
+//Get all Paper-Author-Affiliation relationships.
+@paperAuthorAffiliation = 
+    EXTRACT PaperId long,
+            AuthorId long,
+            AffiliationId long?,
+            AuthorSequenceNumber uint
+    FROM @In_PaperAuthorAffiliation
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Get all affiliation details.
+@affiliation = 
+    EXTRACT AffiliationId long,
+            Rank uint,
+            NormalizedName string,
+            DisplayName string,
+            GridId string,
+            OfficialPage string,
+            WikiPage string,
+            PaperCount long?,
+            CitationCount long?,
+            CreatedDate DateTime
+    FROM @In_Affiliation 
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Get all author details.
+@author = 
+    EXTRACT AuthorId long,
+            Rank uint,
+            NormalizedName string,
+            DisplayName string,
+            LastKnownAffiliationId long?,
+            PaperCount long?,
+            CitationCount long?,
+            CreatedDate DateTime
+    FROM @In_Author
+    USING Extractors.Tsv(silent: true, quoting: false);
+
+//Get all paper details for the input organization.
+@orgPapers = 
+    EXTRACT PaperId long,
+            Title string,
+            CitationCount int?,
+            Date DateTime?,
+            PublicationType string,
+            LogProb double,
+            Url string,
+            VId long?,
+            Year int
+    FROM @In_OrgPaper
+    USING Extractors.Tsv(skipFirstNRows: 1);
+
+//Get all Paper-Author-Affiliation relationships for the input organization.
+@orgPaperAuthorAffiliation =
+    EXTRACT PaperId long,
+            AuthorId long,
+            AffiliationId long?,
+            AuthorSequenceNumber uint
+    FROM @In_OrgPaperAuthorAffiliation
+    USING Extractors.Tsv(skipFirstNRows: 1);
+
+//Get all Paper-Author-Affiliation relationships for papers published by the input organization.
+@orgAllPaperAuthorAffiliations =
+    SELECT @orgPapers.PaperId,
+           @paperAuthorAffiliation.AuthorId,
+           @paperAuthorAffiliation.AffiliationId,
+           @paperAuthorAffiliation.AuthorSequenceNumber
+    FROM @paperAuthorAffiliation
+    INNER JOIN @orgPapers
+    ON @paperAuthorAffiliation.PaperId == @orgPapers.PaperId;
+
+//Get partner Paper-Author-Affiliation relationships by excluding those relationships of the input organization.
+@orgPartnerPaperAuthorAffiliations =
+    SELECT PaperId,
+           AuthorId,
+           AffiliationId,
+           AuthorSequenceNumber
+    FROM @orgAllPaperAuthorAffiliations
+    EXCEPT
+    SELECT PaperId,
+           AuthorId,
+           AffiliationId,
+           AuthorSequenceNumber
+    FROM @orgPaperAuthorAffiliation;
+
+OUTPUT @orgPartnerPaperAuthorAffiliations
+TO @Out_PartnerPaperAuthorAffiliation
+USING Outputters.Tsv(outputHeader: true);
+
+//Get all partner affiliation Ids.
+@orgPartnerAffiliationIds =
+    SELECT DISTINCT (long)AffiliationId AS AffiliationId
+    FROM @orgPartnerPaperAuthorAffiliations
+    WHERE AffiliationId != NULL;
+
+//Get all partner affiliation details.
+@orgPartnerAffiliations =
+    SELECT @orgPartnerAffiliationIds.AffiliationId,
+           @affiliation.DisplayName AS AffiliationName
+    FROM @affiliation
+    INNER JOIN @orgPartnerAffiliationIds
+    ON @affiliation.AffiliationId == @orgPartnerAffiliationIds.AffiliationId;
+
+OUTPUT @orgPartnerAffiliations
+TO @Out_PartnerAffiliation
+USING Outputters.Tsv(outputHeader: true);
+
+//Get all partner author Ids.
+@orgPartnerAuthorIds =
+    SELECT DISTINCT AuthorId
+    FROM @orgPartnerPaperAuthorAffiliations;
+
+//Get all partner author details.
+@orgPartnerAuthors =
+    SELECT @orgPartnerAuthorIds.AuthorId,
+           @author.DisplayName AS AuthorName
+    FROM @author
+    INNER JOIN @orgPartnerAuthorIds
+    ON @author.AuthorId == @orgPartnerAuthorIds.AuthorId;
+
+OUTPUT @orgPartnerAuthors
+TO @Out_PartnerAuthor
+USING Outputters.Tsv(outputHeader: true);

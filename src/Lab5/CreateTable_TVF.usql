@@ -1,0 +1,38 @@
+//TODO: Declare the graph path and use database.
+//START CODE HERE
+DECLARE @Param_GraphDir string = "";
+
+USE DATABASE _____________;
+//END CODE HERE
+
+//Create FieldOfStudy table.
+CREATE TABLE FieldOfStudy
+(
+    INDEX f_idx
+    CLUSTERED(FieldOfStudyId)
+    DISTRIBUTED BY
+    HASH(FieldOfStudyId)
+) AS
+//TODO: Create FieldOfStudy table by invoking dbo.FieldsOfStudy fuction with a parameter @Param_GraphDir.
+//START CODE HERE
+dbo._____________
+//END CODE HERE
+(
+    @Param_GraphDir
+);
+
+//Create PaperFieldOfStudy table.
+CREATE TABLE PaperFieldOfStudy
+(
+    INDEX pfos_idx
+    CLUSTERED(PaperId, FieldOfStudyId)
+    DISTRIBUTED BY
+    HASH(PaperId, FieldOfStudyId)
+) AS
+//TODO: Create FieldOfStudy table by invoking dbo.PaperFieldsOfStudy fuction with a parameter @Param_GraphDir.
+//START CODE HERE
+dbo.__________________
+//END CODE HERE
+(
+    @Param_GraphDir
+);
