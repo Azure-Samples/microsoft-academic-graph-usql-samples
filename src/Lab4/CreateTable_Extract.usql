@@ -1,0 +1,66 @@
+//TODO: Declare the graph path and create database.
+//START CODE HERE
+DECLARE @Param_GraphDir string = "";
+
+DROP DATABASE IF EXISTS _____________;
+CREATE DATABASE _____________;
+USE DATABASE _____________;
+//END CODE HERE
+
+DECLARE @In_Author string = @Param_GraphDir + "Authors.txt";
+DECLARE @In_Paper  string = @Param_GraphDir + "Papers.txt";
+
+//TODO: Create Author table.
+//START CODE HERE
+____________ Author
+//END CODE HERE
+(
+    INDEX au_idx
+    CLUSTERED(AuthorId)
+    DISTRIBUTED BY
+    HASH(AuthorId)
+) AS
+EXTRACT AuthorId long,
+        Rank uint,
+        NormalizedName string,
+        DisplayName string,
+        LastKnownAffiliationId long?,
+        PaperCount long?,
+        CitationCount long?,
+        CreatedDate DateTime
+FROM @In_Author
+USING Extractors.Tsv(silent: true, quoting: false);
+
+//TODO: Create Paper table.
+//START CODE HERE
+____________ Paper
+//END CODE HERE
+(
+    INDEX p_idx
+    CLUSTERED(PaperId)
+    DISTRIBUTED BY
+    HASH(PaperId)
+) AS
+EXTRACT PaperId long,
+        Rank uint,
+        Doi string,
+        DocType string,
+        PaperTitle string,
+        OriginalTitle string,
+        BookTitle string,
+        Year int,
+        Date DateTime?,
+        Publisher string,
+        JournalId long?,
+        ConferenceSeriesId long?,
+        ConferenceInstanceId long?,
+        Volume string,
+        Issue string,
+        FirstPage string,
+        LastPage string,
+        ReferenceCount long?,
+        CitationCount long?,
+        EstimatedCitation int?,
+        CreatedDate DateTime
+FROM @In_Paper
+USING Extractors.Tsv(silent: true, quoting: false);
