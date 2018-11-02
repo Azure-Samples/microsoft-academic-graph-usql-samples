@@ -18,4 +18,5 @@ U-SQL samples for analyzing data in Microsoft Academic Graph
 
 ## Resources
 
+[Microsoft Academic Graph documentation](https://docs.microsoft.com/en-us/academic-services/graph/)
 [Microsoft Academic Graph PySpark Samples](https://github.com/Azure-Samples/microsoft-academic-graph-pyspark-samples)
