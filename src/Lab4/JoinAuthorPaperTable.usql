@@ -1,0 +1,72 @@
+//TODO: Declare the output path and use database.
+//START CODE HERE
+DECLARE @Param_OutputDir string = "";
+
+USE DATABASE _____________;
+//END CODE HERE
+
+DECLARE @Param_OrgPaperMinYear int = 1991;
+DECLARE @Param_Prefix          string = @"https://academic.microsoft.com/#/detail/";
+
+DECLARE @In_PaperAuthorAffiliation string = @Param_OutputDir + "PaperAuthorAffiliationRelationship.tsv";
+
+DECLARE @Out_Author string = @Param_OutputDir + "Author.tsv";
+DECLARE @Out_Paper  string = @Param_OutputDir + "Paper.tsv";
+
+//Get all Paper-Author-Affiliation relationships for the input organization.
+@orgPaperAuthorAffiliation = 
+    EXTRACT PaperId long,
+            AuthorId long,
+            AffiliationId long?,
+            AuthorSequenceNumber uint
+    FROM @In_PaperAuthorAffiliation
+    USING Extractors.Tsv(skipFirstNRows: 1);
+
+//Get all author Ids.
+@orgAuthorIds =
+    SELECT DISTINCT AuthorId
+    FROM @orgPaperAuthorAffiliation;
+
+//Get all author details.
+@orgAuthors =
+    SELECT @orgAuthorIds.AuthorId,
+           Author.DisplayName AS AuthorName
+    //TODO: Join Author table with author Ids above.
+    //START CODE HERE
+    FROM ______
+    //END CODE HERE
+    INNER JOIN @orgAuthorIds
+    ON Author.AuthorId == @orgAuthorIds.AuthorId;
+
+OUTPUT @orgAuthors
+TO @Out_Author
+USING Outputters.Tsv(outputHeader: true);
+
+//Get all paper Ids.
+@orgPaperIds =
+    SELECT DISTINCT PaperId
+    FROM @orgPaperAuthorAffiliation;
+
+//Get all paper details.
+@orgPapers =
+    SELECT Paper.PaperId,
+           Paper.PaperTitle AS Title,
+           Paper.EstimatedCitation AS CitationCount,
+           Paper.Date,
+           //Use "Not avaliable" to represent the publication type if it is unknown.
+           String.IsNullOrEmpty(Paper.DocType) ? "Not avaliable" : Paper.DocType AS PublicationType,
+           Math.Exp(Paper.Rank * -0.001) AS LogProb,
+           @Param_Prefix + Paper.PaperId AS Url,
+           Paper.ConferenceSeriesId == null ? Paper.JournalId : Paper.ConferenceSeriesId AS VId,
+           Year
+    //TODO: Join Paper table with paper Ids above.
+    //START CODE HERE
+    FROM _____
+    //END CODE HERE
+    INNER JOIN @orgPaperIds
+    ON Paper.PaperId == @orgPaperIds.PaperId
+    WHERE Year >= @Param_OrgPaperMinYear;
+
+OUTPUT @orgPapers
+TO @Out_Paper
+USING Outputters.Tsv(outputHeader: true);
