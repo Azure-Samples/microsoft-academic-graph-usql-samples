@@ -8,7 +8,7 @@ U-SQL samples for analyzing data in Microsoft Academic Graph
 
 1. [Get started with Microsoft Academic Graph on Azure storage](https://docs.microsoft.com/en-us/academic-services/graph/get-started-setup-provisioning)
 2. [Get started using Microsoft Academic Graph on Azure Data Lake Analytics](https://docs.microsoft.com/en-us/academic-services/graph/get-started-setup-azure-data-lake-analytics)
-
+3. [Get started with PowerBI](https://powerbi.microsoft.com/en-us/)
 
 ### Quickstart
 
