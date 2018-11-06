@@ -19,7 +19,8 @@ DECLARE @Out_PartnerAuthor                 string = @Param_OutputDir + "Partner_
     EXTRACT PaperId long,
             AuthorId long,
             AffiliationId long?,
-            AuthorSequenceNumber uint
+            AuthorSequenceNumber uint,
+            OriginalAffiliation string
     FROM @In_PaperAuthorAffiliation
     USING Extractors.Tsv(silent: true, quoting: false);
 
