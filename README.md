@@ -1,10 +1,10 @@
 ---
 page_type: sample
 languages:
-- 
+- usql
 products:
 - azure
-description: "U-SQL samples for analyzing data in Microsoft Academic Graph"
+description: "U-SQL samples for analyzing data in Microsoft Academic Graph."
 urlFragment: microsoft-academic-graph-usql-samples
 ---
 
